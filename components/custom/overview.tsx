@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MessageIcon, VercelIcon } from './icons';
+import { MessageIcon } from './icons';
 
 export const Overview = () => {
   return (
@@ -13,13 +13,11 @@ export const Overview = () => {
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
         <p className="flex flex-row justify-center gap-4 items-center">
-          {/* <BookOpenIcon size={32} /> */}
-          {/* <span>+</span> */}
           <MessageIcon size={32} />
         </p>
         <p>
-          Selamat datang di HR-GenAI, asisten hukum ketenagakerjaan Indonesia
-          yang cerdas. Dirancang khusus untuk membantu Anda memahami dan
+          Selamat datang di HR-GenAI, asisten hukum ketenagakerjaan Indonesia. 
+          Dirancang khusus untuk membantu Anda memahami dan
           menerapkan peraturan ketenagakerjaan Indonesia dengan lebih baik.
         </p>
         <p className="text-muted-foreground">
