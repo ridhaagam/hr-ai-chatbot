@@ -1,61 +1,135 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Next.js AI Chatbot</h1>
-</a>
+# HR-GenAI: Asisten Hukum Ketenagakerjaan Indonesia
 
 <p align="center">
-  An Open-Source AI Chatbot Template Built With Next.js and the AI SDK by Vercel.
+  <img src="app/(chat)/opengraph-image.png" alt="Asisten Hukum Ketenagakerjaan Indonesia" width="200"/>
 </p>
 
 <p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
+  Asisten AI Pintar untuk Membantu Memahami dan Menerapkan Hukum Ketenagakerjaan Indonesia
 </p>
-<br/>
 
-## Features
+<p align="center">
+  <a href="#fitur"><strong>Fitur</strong></a> ·
+  <a href="#dataset"><strong>Dataset</strong></a> ·
+  <a href="#instalasi"><strong>Instalasi</strong></a> ·
+  <a href="#penggunaan-lokal"><strong>Penggunaan Lokal</strong></a>
+</p>
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports OpenAI (default), Anthropic, Cohere, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Vercel Postgres powered by Neon](https://vercel.com/storage/postgres) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [NextAuth.js](https://github.com/nextauthjs/next-auth)
-  - Simple and secure authentication
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+  </a>
+  <a href="https://github.com/yourusername/hr-genai/issues">
+    <img src="https://img.shields.io/github/issues/yourusername/hr-genai" alt="GitHub issues">
+  </a>
+  <a href="https://github.com/yourusername/hr-genai/network">
+    <img src="https://img.shields.io/github/forks/yourusername/hr-genai" alt="GitHub forks">
+  </a>
+</p>
 
-## Model Providers
+## 🚀 Demo
 
-This template ships with OpenAI `gpt-4o` as the default. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
+Kunjungi [hr-genai.vercel.app](https://hr-genai.vercel.app) untuk mencoba aplikasi secara langsung.
 
-## Deploy Your Own
+## 🔄 Alur Kerja Sistem
 
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
+```mermaid
+[![](https://mermaid.ink/img/pako:eNqVVk1z2zYQ_SsYZqYnazpT91IdOkNTku0ktmV92EmgHCByKWEEASwAxlZl__cuAJKCEsWT6gRq3y72Pb1dap_kqoCkn5RCPeVrpi2ZDRaS4MfUy5Vm1ZoMmGVjDRV1BwOWuAemmeVKfg1Y90lppoSA3JKPsGKCDFReb0Fa85X0en-TCzp8tppheAICvjFpyRTBWMNERS48NqOZBmaBzDTjkssVGTOuY1zmcQM6UnrLLCmVJiMuoWdrB4-AAw8c-t7JAxO88H2T30gmgEVgkMVCfsf8BrURnro__YT4iE7B875AdUIOuRzPen_2tth8YH9JQy7EbZJprnllo1KXHnyFBS252lWg3XVbsNCRP9VmqxI9yKVVDiYW7JrOK6FYQdof0SpyV4FMr0OD7-m15JajQP_CT6R874EfUAtEouDxbSt9fN0Hj_1IG8VbWcagS_eLyRze4JOtmb2WSLpkOVD3RLrH6I4bOjegSeBlSKak99fv9zXoXWB1u29YkVQysTPcvB7ybx3kpU1r6ryQO9o6t5XxWIaQNoNnS_xNL2RM_eE0_HC68y3dd3PQ3TwUEAblgL332Mk-cmy2hnwTtT_xfdxwfyEKVKoXMqWp2aCzmeblzn2NjZnvZ2zqa8-CetjzN16AIWlRcIdErVytCD8LvZyiNGkk3FYCTdo0MadhAbSSR6XGvtT8VKm5Dz3QS5CgnWOmVte5rTUUuDFMhRze8kwLoe2BNIWOZ_XB3_LY7o0rYAXoKP7o45-oo8TkjgzAMi5Mu6oi5CeP_EyHyF3tIJB3RY9hnz3sC31UenNKkS8-nqaNZhMoQQOOR4xJ0wC6QHK52qJXgiXMSZulYYemGcUxxpJ3ta1qSwLjuGrYoenArSbj7I4rwXnidNWwSNPh3ttmhKtePfXqKjJkOvRuuIWnznY4Gz_EJ_CPizYu5TkLwHREGy_GVmz0j9seBaP8YIX2NeXD3eYOse4xWL9ZXCHWrTH_5olXT4g3RrM7AYc7Si5E_135V3lmrFYb6L87Pz9vzr0nXth1_4_qOU49tBByl8tfz-1abFLL5S-nHhFq2_4f-d04NanLt1OTs2QLaDRe4H-KvSu0SOwa19si6eOxYHqzSBbyFXGstmq6k3nSx0GHs0SrerVO-iUTBp_qyr02BpzheG8D5PU_VfS6vA?type=png)](https://mermaid-js.github.io/mermaid-live-editor/edit#pako:eNqVVk1z2zYQ_SsYZqYnazpT91IdOkNTku0ktmV92EmgHCByKWEEASwAxlZl__cuAJKCEsWT6gRq3y72Pb1dap_kqoCkn5RCPeVrpi2ZDRaS4MfUy5Vm1ZoMmGVjDRV1BwOWuAemmeVKfg1Y90lppoSA3JKPsGKCDFReb0Fa85X0en-TCzp8tppheAICvjFpyRTBWMNERS48NqOZBmaBzDTjkssVGTOuY1zmcQM6UnrLLCmVJiMuoWdrB4-AAw8c-t7JAxO88H2T30gmgEVgkMVCfsf8BrURnro__YT4iE7B875AdUIOuRzPen_2tth8YH9JQy7EbZJprnllo1KXHnyFBS252lWg3XVbsNCRP9VmqxI9yKVVDiYW7JrOK6FYQdof0SpyV4FMr0OD7-m15JajQP_CT6R874EfUAtEouDxbSt9fN0Hj_1IG8VbWcagS_eLyRze4JOtmb2WSLpkOVD3RLrH6I4bOjegSeBlSKak99fv9zXoXWB1u29YkVQysTPcvB7ybx3kpU1r6ryQO9o6t5XxWIaQNoNnS_xNL2RM_eE0_HC68y3dd3PQ3TwUEAblgL332Mk-cmy2hnwTtT_xfdxwfyEKVKoXMqWp2aCzmeblzn2NjZnvZ2zqa8-CetjzN16AIWlRcIdErVytCD8LvZyiNGkk3FYCTdo0MadhAbSSR6XGvtT8VKm5Dz3QS5CgnWOmVte5rTUUuDFMhRze8kwLoe2BNIWOZ_XB3_LY7o0rYAXoKP7o45-oo8TkjgzAMi5Mu6oi5CeP_EyHyF3tIJB3RY9hnz3sC31UenNKkS8-nqaNZhMoQQOOR4xJ0wC6QHK52qJXgiXMSZulYYemGcUxxpJ3ta1qSwLjuGrYoenArSbj7I4rwXnidNWwSNPh3ttmhKtePfXqKjJkOvRuuIWnznY4Gz_EJ_CPizYu5TkLwHREGy_GVmz0j9seBaP8YIX2NeXD3eYOse4xWL9ZXCHWrTH_5olXT4g3RrM7AYc7Si5E_135V3lmrFYb6L87Pz9vzr0nXth1_4_qOU49tBByl8tfz-1abFLL5S-nHhFq2_4f-d04NanLt1OTs2QLaDRe4H-KvSu0SOwa19si6eOxYHqzSBbyFXGstmq6k3nSx0GHs0SrerVO-iUTBp_qyr02BpzheG8D5PU_VfS6vA)
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-chatbot&env=AUTH_SECRET,OPENAI_API_KEY&envDescription=Learn%20more%20about%20how%20to%20get%20the%20API%20Keys%20for%20the%20application&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-chatbot%2Fblob%2Fmain%2F.env.example&demo-title=AI%20Chatbot&demo-description=An%20Open-Source%20AI%20Chatbot%20Template%20Built%20With%20Next.js%20and%20the%20AI%20SDK%20by%20Vercel.&demo-url=https%3A%2F%2Fchat.vercel.ai&stores=[{%22type%22:%22postgres%22},{%22type%22:%22blob%22}])
+## ✨ Fitur
 
-## Running locally
+### 📋 Analisis Hukum Ketenagakerjaan
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+- 📝 Analisis kontrak kerja (PKWT/PKWTT)
+- 🧮 Perhitungan pesangon otomatis sesuai UU
+- 📊 Evaluasi kebijakan perusahaan
+- 📚 Referensi UU yang relevan
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
+### 💻 Teknologi Modern
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+- ⚡️ [Next.js](https://nextjs.org) App Router untuk performa optimal
+- 🤖 [AI SDK](https://sdk.vercel.ai/docs) untuk generasi teks dan analisis
+- 🧠 [OpenAI GPT-4](https://openai.com) untuk pemahaman konteks yang mendalam
+- 🎨 Antarmuka responsif dengan [Tailwind CSS](https://tailwindcss.com)
+
+### 🔒 Fitur Keamanan & Penyimpanan
+
+- 🔑 Autentikasi aman dengan [NextAuth.js](https://github.com/nextauthjs/next-auth)
+- 💾 Penyimpanan data dengan [Vercel Postgres](https://vercel.com/storage/postgres)
+- 📁 Pengelolaan dokumen dengan [Vercel Blob](https://vercel.com/storage/blob)
+
+## 📊 Dataset
+
+Dataset lengkap yang digunakan dalam proyek ini dapat diakses di:
+[drive.com](https://drive.com)
+
+Dataset mencakup:
+
+- 📜 Undang-Undang Ketenagakerjaan Indonesia
+- 📋 Peraturan Pemerintah terkait
+- 📝 Contoh kasus dan penyelesaiannya
+- 📄 Templat dokumen HR standar
+
+## 🛠️ Instalasi
+
+1. Clone repositori
+
+```bash
+git clone https://github.com/yourusername/hr-genai.git
+```
+
+2. Install dependensi
 
 ```bash
 pnpm install
-pnpm dev
 ```
 
-Your app template should now be running on [localhost:3000](http://localhost:3000/).
+3. Siapkan environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+## 🔑 Environment Variables
+
+```env
+# Authentication
+AUTH_SECRET=your-auth-secret
+
+# OpenAI
+OPENAI_API_KEY=your-openai-api-key
+
+# Database
+POSTGRES_URL=your-postgres-url
+
+# Storage
+BLOB_READ_WRITE_TOKEN=your-blob-token
+```
+
+## 🤝 Kontribusi
+
+Kami sangat menghargai kontribusi Anda! Silakan buat pull request atau laporkan issues jika menemukan bug atau memiliki saran peningkatan.
+
+1. Fork repositori ini
+2. Buat branch baru (`git checkout -b feature/..`)
+3. Commit perubahan Anda (`git commit -m 'New Fix'`)
+4. Push ke branch (`git push origin feature/..`)
+5. Buat Pull Request
+
+## 📝 Lisensi
+
+Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
+
+## 👥 Tim
+
+- Ir. Galih Wasis Wicaksono, S.Kom, M.Cs
+- Nur Putri Hidayah, A.Md., SH., MH.
+- Muh. Ridha Agam
+
+## 🙏 All softwares used:
+
+- [Next.js](https://nextjs.org)
+- [Vercel AI SDK](https://sdk.vercel.ai/docs)
+- [Tailwind CSS](https://tailwindcss.com)
+- [NextAuth.js](https://next-auth.js.org)
