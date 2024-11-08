@@ -24,14 +24,14 @@ import { Textarea } from '../ui/textarea';
 
 const suggestedActions = [
   {
-    title: 'What is the weather',
-    label: 'in San Francisco?',
-    action: 'What is the weather in San Francisco?',
+    title: 'Apa perbedaan PKWT dan PKWTT',
+    label: 'dalam sebuah Perusahaan?',
+    action: 'Apa perbedaan PKWT dan PKWTT? dalam perusahaan',
   },
   {
-    title: 'Help me draft an essay',
-    label: 'about Silicon Valley',
-    action: 'Help me draft a short essay about Silicon Valley',
+    title: 'Apa saja undang-undang saat lembur',
+    label: 'pada hari libur?',
+    action: 'Apa saja undang-undang saat lembur pada hari libur?',
   },
 ];
 

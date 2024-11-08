@@ -9,23 +9,23 @@ export interface Model {
 
 export const models: Array<Model> = [
   {
-    id: 'gpt-4o-mini',
-    label: 'GPT 4o mini',
-    apiIdentifier: 'gpt-4o-mini',
-    description: 'Small model for fast, lightweight tasks',
+    id: 'ft:gpt-4o-mini-2024-07-18:galih-wasis-wicaksono::AR7H9cQt',
+    label: 'HR Gen-AI',
+    apiIdentifier: 'ft:gpt-4o-mini-2024-07-18:galih-wasis-wicaksono::AR7H9cQt',
+    description: 'Specific model for HR',
   },
-  {
-    id: 'gpt-4o',
-    label: 'GPT 4o',
-    apiIdentifier: 'gpt-4o',
-    description: 'For complex, multi-step tasks',
-  },
-  {
-    id: 'gpt-4o-blocks',
-    label: 'GPT 4o with Blocks',
-    apiIdentifier: 'gpt-4o',
-    description: 'Collaborate with writing',
-  },
+  // {
+  //   id: 'gpt-4o',
+  //   label: 'GPT 4o',
+  //   apiIdentifier: 'gpt-4o',
+  //   description: 'For complex, multi-step tasks',
+  // },
+  // {
+  //   id: 'gpt-4o-blocks',
+  //   label: 'GPT 4o with Blocks',
+  //   apiIdentifier: 'gpt-4o',
+  //   description: 'Collaborate with writing',
+  // },
 ] as const;
 
-export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';
+export const DEFAULT_MODEL_NAME: string = 'ft:gpt-4o-mini-2024-07-18:galih-wasis-wicaksono::AR7H9cQt';

@@ -2,14 +2,13 @@ import {
   convertToCoreMessages,
   Message,
   StreamData,
-  streamObject,
   streamText,
+  streamObject,
 } from 'ai';
 import { z } from 'zod';
 
 import { customModel } from '@/ai';
 import { models } from '@/ai/models';
-import { blocksPrompt, regularPrompt } from '@/ai/prompts';
 import { auth } from '@/app/(auth)/auth';
 import {
   deleteChatById,
@@ -18,9 +17,7 @@ import {
   saveChat,
   saveDocument,
   saveMessages,
-  saveSuggestions,
 } from '@/db/queries';
-import { Suggestion } from '@/db/schema';
 import {
   generateUUID,
   getMostRecentUserMessage,
@@ -32,18 +29,52 @@ import { generateTitleFromUserMessage } from '../../actions';
 export const maxDuration = 60;
 
 type AllowedTools =
+  | 'analyzeContract'
+  | 'calculateSeverance'
   | 'createDocument'
-  | 'updateDocument'
-  | 'requestSuggestions'
-  | 'getWeather';
+  | 'updateDocument';
 
-const blocksTools: AllowedTools[] = [
+const hrTools: AllowedTools[] = [
+  'analyzeContract',
+  'calculateSeverance',
   'createDocument',
   'updateDocument',
-  'requestSuggestions',
 ];
 
-const weatherTools: AllowedTools[] = ['getWeather'];
+// HR-specific system prompt
+const hrSystemPrompt = `Anda adalah asisten hukum yang ahli dalam bidang hukum ketenagakerjaan Indonesia. Tugas Anda adalah:
+
+1. Menganalisis informasi terkait:
+   - Kontrak kerja (PKWT/PKWTT)
+   - Peraturan ketenagakerjaan
+   - Kebijakan perusahaan
+   - Topik HR lainnya
+
+2. Fokus analisis mencakup:
+   - Identifikasi detail kontrak (jenis, durasi, perpanjangan)
+   - Evaluasi kepatuhan dengan UU Ketenagakerjaan Indonesia
+   - Batas durasi kontrak
+   - Legalitas perpanjangan
+   - Hak karyawan
+
+3. Untuk perhitungan pesangon, mengacu pada Pasal 156:
+   a. masa kerja kurang dari 1 tahun: 1 bulan upah
+   b. masa kerja 1-2 tahun: 2 bulan upah
+   c. masa kerja 2-3 tahun: 3 bulan upah
+   d. masa kerja 3-4 tahun: 4 bulan upah
+   e. masa kerja 4-5 tahun: 5 bulan upah
+   f. masa kerja 5-6 tahun: 6 bulan upah
+   g. masa kerja 6-7 tahun: 7 bulan upah
+   h. masa kerja 7-8 tahun: 8 bulan upah
+   i. masa kerja 8+ tahun: 9 bulan upah
+
+PENTING: Jika pertanyaan tidak terkait hukum ketenagakerjaan Indonesia, balas:
+"Mohon maaf, pertanyaan Anda di luar cakupan hukum ketenagakerjaan Indonesia. Silakan ajukan pertanyaan terkait:
+- Kontrak kerja (PKWT/PKWTT)
+- Pesangon dan kompensasi
+- Hak dan kewajiban pekerja
+- Peraturan ketenagakerjaan
+- Kebijakan HR sesuai UU"`;
 
 export async function POST(request: Request) {
   const {
@@ -89,33 +120,72 @@ export async function POST(request: Request) {
 
   const result = await streamText({
     model: customModel(model.apiIdentifier),
-    system: modelId === 'gpt-4o-blocks' ? blocksPrompt : regularPrompt,
+    system: hrSystemPrompt,
     messages: coreMessages,
     maxSteps: 5,
-    experimental_activeTools:
-      modelId === 'gpt-4o-blocks' ? blocksTools : weatherTools,
+    experimental_activeTools: hrTools,
     tools: {
-      getWeather: {
-        description: 'Get the current weather at a location',
+      analyzeContract: {
+        description:
+          'Analyze an employment contract for compliance with Indonesian law',
         parameters: z.object({
-          latitude: z.number(),
-          longitude: z.number(),
+          contractType: z.enum(['PKWT', 'PKWTT']),
+          duration: z.string(),
+          terms: z.string(),
         }),
-        execute: async ({ latitude, longitude }) => {
-          const response = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`
-          );
+        execute: async ({ contractType, duration, terms }) => {
+          const analysis = {
+            type: contractType,
+            duration,
+            compliance: {
+              status: 'Pending Review',
+              issues: [],
+              recommendations: [],
+            },
+          };
 
-          const weatherData = await response.json();
-          return weatherData;
+          streamingData.append({
+            type: 'analysis',
+            content: analysis,
+          });
+
+          return analysis;
+        },
+      },
+      calculateSeverance: {
+        description: 'Calculate severance pay based on Indonesian labor law',
+        parameters: z.object({
+          yearsOfService: z.number(),
+          monthlySalary: z.number(),
+        }),
+        execute: async ({ yearsOfService, monthlySalary }) => {
+          // Implement Pasal 156 calculations
+          let multiplier = Math.min(Math.floor(yearsOfService) + 1, 9);
+          const severancePay = monthlySalary * multiplier;
+
+          const calculation = {
+            yearsOfService,
+            monthlySalary,
+            multiplier,
+            severancePay,
+            basis: 'Pasal 156 UU Ketenagakerjaan',
+          };
+
+          streamingData.append({
+            type: 'calculation',
+            content: calculation,
+          });
+
+          return calculation;
         },
       },
       createDocument: {
-        description: 'Create a document for a writing activity',
+        description: 'Create an HR document or policy',
         parameters: z.object({
           title: z.string(),
+          documentType: z.enum(['policy', 'contract', 'memo']),
         }),
-        execute: async ({ title }) => {
+        execute: async ({ title, documentType }) => {
           const id = generateUUID();
           let draftText: string = '';
 
@@ -124,38 +194,22 @@ export async function POST(request: Request) {
             content: id,
           });
 
-          streamingData.append({
-            type: 'title',
-            content: title,
-          });
-
-          streamingData.append({
-            type: 'clear',
-            content: '',
-          });
-
           const { fullStream } = await streamText({
             model: customModel(model.apiIdentifier),
             system:
-              'Write about the given topic. Markdown is supported. Use headings wherever appropriate.',
-            prompt: title,
+              'Create an HR document following Indonesian labor law requirements.',
+            prompt: `Create a ${documentType} titled: ${title}`,
           });
 
           for await (const delta of fullStream) {
-            const { type } = delta;
-
-            if (type === 'text-delta') {
-              const { textDelta } = delta;
-
-              draftText += textDelta;
+            if (delta.type === 'text-delta') {
+              draftText += delta.textDelta;
               streamingData.append({
                 type: 'text-delta',
-                content: textDelta,
+                content: delta.textDelta,
               });
             }
           }
-
-          streamingData.append({ type: 'finish', content: '' });
 
           if (session.user && session.user.id) {
             await saveDocument({
@@ -169,28 +223,24 @@ export async function POST(request: Request) {
           return {
             id,
             title,
-            content: `A document was created and is now visible to the user.`,
+            type: documentType,
+            content: 'Document created successfully.',
           };
         },
       },
       updateDocument: {
-        description: 'Update a document with the given description',
+        description: 'Update an existing HR document',
         parameters: z.object({
-          id: z.string().describe('The ID of the document to update'),
-          description: z
-            .string()
-            .describe('The description of changes that need to be made'),
+          id: z.string(),
+          description: z.string(),
         }),
         execute: async ({ id, description }) => {
           const document = await getDocumentById({ id });
 
           if (!document) {
-            return {
-              error: 'Document not found',
-            };
+            return { error: 'Document not found' };
           }
 
-          const { content: currentContent } = document;
           let draftText: string = '';
 
           streamingData.append({
@@ -201,39 +251,22 @@ export async function POST(request: Request) {
           const { fullStream } = await streamText({
             model: customModel(model.apiIdentifier),
             system:
-              'You are a helpful writing assistant. Based on the description, please update the piece of writing.',
-            experimental_providerMetadata: {
-              openai: {
-                prediction: {
-                  type: 'content',
-                  content: currentContent,
-                },
-              },
-            },
+              'Update the HR document following Indonesian labor law requirements.',
             messages: [
-              {
-                role: 'user',
-                content: description,
-              },
-              { role: 'user', content: currentContent },
+              { role: 'user', content: description },
+              { role: 'user', content: document.content },
             ],
           });
 
           for await (const delta of fullStream) {
-            const { type } = delta;
-
-            if (type === 'text-delta') {
-              const { textDelta } = delta;
-
-              draftText += textDelta;
+            if (delta.type === 'text-delta') {
+              draftText += delta.textDelta;
               streamingData.append({
                 type: 'text-delta',
-                content: textDelta,
+                content: delta.textDelta,
               });
             }
           }
-
-          streamingData.append({ type: 'finish', content: '' });
 
           if (session.user && session.user.id) {
             await saveDocument({
@@ -247,80 +280,7 @@ export async function POST(request: Request) {
           return {
             id,
             title: document.title,
-            content: 'The document has been updated successfully.',
-          };
-        },
-      },
-      requestSuggestions: {
-        description: 'Request suggestions for a document',
-        parameters: z.object({
-          documentId: z
-            .string()
-            .describe('The ID of the document to request edits'),
-        }),
-        execute: async ({ documentId }) => {
-          const document = await getDocumentById({ id: documentId });
-
-          if (!document || !document.content) {
-            return {
-              error: 'Document not found',
-            };
-          }
-
-          let suggestions: Array<
-            Omit<Suggestion, 'userId' | 'createdAt' | 'documentCreatedAt'>
-          > = [];
-
-          const { elementStream } = await streamObject({
-            model: customModel(model.apiIdentifier),
-            system:
-              'You are a help writing assistant. Given a piece of writing, please offer suggestions to improve the piece of writing and describe the change. It is very important for the edits to contain full sentences instead of just words. Max 5 suggestions.',
-            prompt: document.content,
-            output: 'array',
-            schema: z.object({
-              originalSentence: z.string().describe('The original sentence'),
-              suggestedSentence: z.string().describe('The suggested sentence'),
-              description: z
-                .string()
-                .describe('The description of the suggestion'),
-            }),
-          });
-
-          for await (const element of elementStream) {
-            const suggestion = {
-              originalText: element.originalSentence,
-              suggestedText: element.suggestedSentence,
-              description: element.description,
-              id: generateUUID(),
-              documentId: documentId,
-              isResolved: false,
-            };
-
-            streamingData.append({
-              type: 'suggestion',
-              content: suggestion,
-            });
-
-            suggestions.push(suggestion);
-          }
-
-          if (session.user && session.user.id) {
-            const userId = session.user.id;
-
-            await saveSuggestions({
-              suggestions: suggestions.map((suggestion) => ({
-                ...suggestion,
-                userId,
-                createdAt: new Date(),
-                documentCreatedAt: document.createdAt,
-              })),
-            });
-          }
-
-          return {
-            id: documentId,
-            title: document.title,
-            message: 'Suggestions have been added to the document',
+            content: 'Document updated successfully.',
           };
         },
       },
@@ -328,35 +288,28 @@ export async function POST(request: Request) {
     onFinish: async ({ responseMessages }) => {
       if (session.user && session.user.id) {
         try {
-          const responseMessagesWithoutIncompleteToolCalls =
-            sanitizeResponseMessages(responseMessages);
-
+          const sanitizedMessages = sanitizeResponseMessages(responseMessages);
           await saveMessages({
-            messages: responseMessagesWithoutIncompleteToolCalls.map(
-              (message) => {
-                const messageId = generateUUID();
-
-                if (message.role === 'assistant') {
-                  streamingData.appendMessageAnnotation({
-                    messageIdFromServer: messageId,
-                  });
-                }
-
-                return {
-                  id: messageId,
-                  chatId: id,
-                  role: message.role,
-                  content: message.content,
-                  createdAt: new Date(),
-                };
+            messages: sanitizedMessages.map((message) => {
+              const messageId = generateUUID();
+              if (message.role === 'assistant') {
+                streamingData.appendMessageAnnotation({
+                  messageIdFromServer: messageId,
+                });
               }
-            ),
+              return {
+                id: messageId,
+                chatId: id,
+                role: message.role,
+                content: message.content,
+                createdAt: new Date(),
+              };
+            }),
           });
         } catch (error) {
           console.error('Failed to save chat');
         }
       }
-
       streamingData.close();
     },
     experimental_telemetry: {
