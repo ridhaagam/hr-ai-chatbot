@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MessageIcon, BookOpenIcon } from 'lucide-react'; // Using lucide-react for HR-appropriate icons
+import { MessageIcon, VercelIcon } from './icons';
 
 export const Overview = () => {
   return (
@@ -13,8 +13,8 @@ export const Overview = () => {
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
         <p className="flex flex-row justify-center gap-4 items-center">
-          <BookOpenIcon size={32} />
-          <span>+</span>
+          {/* <BookOpenIcon size={32} /> */}
+          {/* <span>+</span> */}
           <MessageIcon size={32} />
         </p>
         <p>
