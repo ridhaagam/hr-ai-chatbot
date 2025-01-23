@@ -21,5 +21,4 @@ export const models: Array<Model> = [
   },
 ] as const;
 
-export const DEFAULT_MODEL_NAME: string =
-  'ft:gpt-4o-mini-2024-07-18:galih-wasis-wicaksono:industrial-relationship:AsUFb2at';
+export const DEFAULT_MODEL_NAME: string = 'ft:gpt-4o-mini-2024-07-18:galih-wasis-wicaksono:industrial-relationship:AsUFb2at';
